@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in | Zomato</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { min-height:100vh; background:#fafafa; }
+        .auth-wrap { min-height:calc(100vh - 78px); display:grid; place-items:center; padding:32px 16px; }
+        .auth-card { width:min(100%, 440px); background:#fff; border:1px solid #eee; border-radius:16px; padding:30px; box-shadow:0 12px 40px #1c1c1c10; }
+        .auth-card h1 { margin:0 0 8px; font-size:28px; color:#1c1c1c; }
+        .auth-subtitle { margin:0 0 24px; color:#777; }
+        .auth-tabs { display:flex; border-bottom:1px solid #eee; margin-bottom:22px; }
+        .auth-tab { flex:1; padding:12px; border:0; border-bottom:2px solid transparent; background:none; color:#777; font-size:15px; cursor:pointer; }
+        .auth-tab.active { color:#e23744; border-color:#e23744; font-weight:700; }
+        .auth-form { display:none; }
+        .auth-form.active { display:block; }
+        .auth-form label { display:block; margin:14px 0 6px; color:#444; font-size:14px; font-weight:600; }
+        .auth-form input { width:100%; box-sizing:border-box; padding:12px 13px; border:1px solid #ddd; border-radius:8px; font-size:15px; outline:none; }
+        .auth-form input:focus { border-color:#e23744; box-shadow:0 0 0 3px #e2374418; }
+        .auth-submit { width:100%; margin-top:22px; padding:13px; border:0; border-radius:8px; background:#e23744; color:white; font-size:16px; font-weight:700; cursor:pointer; }
+        .auth-message { padding:11px 13px; border-radius:8px; margin-bottom:14px; font-size:14px; }
+        .auth-message.error { background:#fff0f0; color:#bd2634; }
+        .auth-message.success { background:#effaf1; color:#237a38; }
+        .auth-back { display:block; text-align:center; margin-top:18px; color:#777; text-decoration:none; font-size:14px; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-left"><a href="/" class="logo">zomato</a></div>
+        <div class="nav-actions"><a href="/" class="btn btn-outline">← Back to restaurants</a></div>
+    </header>
+
+    <main class="auth-wrap">
+        <section class="auth-card">
+            <h1>Your food, your account</h1>
+            <p class="auth-subtitle">Sign in or create an account to get started.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="auth-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            <div class="auth-tabs" role="tablist">
+                <button class="auth-tab {{ 'active' if active_form != 'register' else '' }}" type="button" onclick="showForm('login')">Sign in</button>
+                <button class="auth-tab {{ 'active' if active_form == 'register' else '' }}" type="button" onclick="showForm('register')">Create account</button>
+            </div>
+
+            <form class="auth-form {{ 'active' if active_form != 'register' else '' }}" id="loginForm" method="post" action="/login">
+                <input type="hidden" name="action" value="login">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" name="email" autocomplete="email" required>
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" name="password" autocomplete="current-password" required>
+                <button class="auth-submit" type="submit">Sign in</button>
+            </form>
+
+            <form class="auth-form {{ 'active' if active_form == 'register' else '' }}" id="registerForm" method="post" action="/login">
+                <input type="hidden" name="action" value="register">
+                <label for="registerName">Full name</label>
+                <input id="registerName" type="text" name="name" autocomplete="name" required>
+                <label for="registerEmail">Email</label>
+                <input id="registerEmail" type="email" name="email" autocomplete="email" required>
+                <label for="registerPhone">Phone (optional)</label>
+                <input id="registerPhone" type="tel" name="phone" autocomplete="tel">
+                <label for="registerPassword">Password</label>
+                <input id="registerPassword" type="password" name="password" minlength="8" autocomplete="new-password" required>
+                <button class="auth-submit" type="submit">Create account</button>
+            </form>
+            <a class="auth-back" href="/">Continue browsing restaurants</a>
+        </section>
+    </main>
+    <script>
+        function showForm(which) {
+            document.getElementById('loginForm').classList.toggle('active', which === 'login');
+            document.getElementById('registerForm').classList.toggle('active', which === 'register');
+            document.querySelectorAll('.auth-tab').forEach((tab, index) => {
+                tab.classList.toggle('active', (index === 0) === (which === 'login'));
+            });
+        }
+    </script>
+</body>
+</html>
